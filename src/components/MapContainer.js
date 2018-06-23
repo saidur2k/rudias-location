@@ -1,17 +1,7 @@
-import React, { Component } from 'react'
+import React from 'react'
 import Map from './Map'
-import locations from '../data/locations';
-import averageGeolocation from '../lib/averageGeolocation'
+import locations from '../data/locations'
 
-export default class MapContainer extends Component {
-    
-    render() {
-        return (
-            <Map 
-                locations={locations} 
-                defaultCenter={averageGeolocation(locations)}
-                multipleMarkers={true}
-            />
-        )
-    }
-}
+const MapContainer = () => <Map locations={locations} multipleMarkers />
+
+export default MapContainer
