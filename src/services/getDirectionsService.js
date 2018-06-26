@@ -29,3 +29,4 @@ function getDirectionsService (origin, destination, modeOfTravel) {
 }
 
 export default getDirectionsService
+export { getDirectionsPromise }

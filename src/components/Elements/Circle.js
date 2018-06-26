@@ -6,18 +6,14 @@ const circleStyles = color => ({
   strokeOpacity: 0.8,
   strokeWeight: 2,
   fillColor: color,
-  fillOpacity: 0.35
+  fillOpacity: 0.45
 })
 
-const CustomCircle = ({ type, center }) => {
-  const color = type && type === 'custom' ? '#00FF00' : '#FF0000'
+const Circle = ({ type, position }) => {
+  const color = type && type === 'custom' ? '#00FF00' : '#e8ffa1'
   return (
-    <GoogleCircle radius={1000} center={center} options={circleStyles(color)} />
+    <GoogleCircle radius={1000} center={position} options={circleStyles(color)} />
   )
 }
-
-const Circle = ({ position, type }) => (
-  <CustomCircle center={position} type={type} />
-)
 
 export default Circle

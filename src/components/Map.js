@@ -1,16 +1,19 @@
 import React, { Component } from 'react'
 
+import OriginSelector from './Elements/OriginSelector'
 import LocationsGoogleMap from './LocationsGoogleMap'
 import MultipleMarkersWithCircles from './Groupings/MultipleMarkersWithCircles'
 import ModeOfTravel from './Elements/ModeOfTravel'
-import Table from './Table/'
+import Table from './Elements/Table'
 
-import getDirectionAndDistance from '../lib/getDirectionAndDistance'
+import Directions from './Elements/Directions'
+
 import FitMarkersOnMap from '../lib/FitMarkersOnMap'
 import GoogleMapsConfig from '../lib/GoogleMapsConfig'
 import setCenter from '../lib/setCenter'
 
 const DEFAULT_ZOOM = 12
+
 class PropertyMap extends Component {
   constructor (props) {
     super(props)
@@ -18,14 +21,13 @@ class PropertyMap extends Component {
     this.state = {
       activeMarker: {},
       zoom: DEFAULT_ZOOM,
-      directions: null,
       modeOfTravel: 'DRIVING',
       origin: props.locations[0],
-      distance: null,
       center: setCenter(props.locations),
       locations: props.locations
     }
 
+    this.map = React.createRef()
     this.searchBox = React.createRef()
 
     // we fit all markers in the map just when loading it, after that it's user's choice what to fit in his viewport
@@ -35,7 +37,13 @@ class PropertyMap extends Component {
     this.zoomIn = this.zoomIn.bind(this)
     this.onModeOfTravelChange = this.onModeOfTravelChange.bind(this)
     this.onPlacesChanged = this.onPlacesChanged.bind(this)
+    this.onMapMounted = this.onMapMounted.bind(this)
     this.onSearchBoxMounted = this.onSearchBoxMounted.bind(this)
+    this.handleOriginSelection = this.handleOriginSelection.bind(this)
+  }
+
+  onMapMounted (ref) {
+    this.map = ref
   }
 
   onSearchBoxMounted (ref) {
@@ -47,49 +55,32 @@ class PropertyMap extends Component {
     const newMarkers = []
 
     places.forEach((place, index) => {
-      return newMarkers.push(
-        {
-          title: place.formatted_address,
-          lat: place.geometry.location.lat(),
-          lng: place.geometry.location.lng(),
-          type: 'custom',
-          id: this.state.locations.length + (index + 1)
-        }
-      )
+      return newMarkers.push({
+        title: place.formatted_address,
+        lat: place.geometry.location.lat(),
+        lng: place.geometry.location.lng(),
+        type: 'custom',
+        id: this.state.locations.length + (index + 1)
+      })
     })
 
-    this.setState((previousState) => {
+    this.setState(previousState => {
       const locations = previousState.locations.concat(newMarkers)
       return {
         center: setCenter(locations),
         locations: locations,
-        origin: newMarkers[0]
+        activeMarker: newMarkers[0]
       }
     })
-
-    this.setActiveMarker(newMarkers[0])
   }
 
   setActiveMarker (clickedMarker) {
     this.fitMap = true
 
-    this.state.locations.filter(async item => {
-      if (
-        item.lat === clickedMarker.lat &&
-        item.lng === clickedMarker.lng
-      ) {
-        const directionAndDistance = await getDirectionAndDistance({
-          origin: this.state.origin,
-          destination: item,
-          destinations: this.state.locations,
-          mode: this.state.modeOfTravel
-        })
-
+    this.state.locations.filter(item => {
+      if (item.lat === clickedMarker.lat && item.lng === clickedMarker.lng) {
         this.setState({
-          activeMarker: item,
-          orgin: item,
-          directions: directionAndDistance.direction,
-          distance: directionAndDistance.distance
+          activeMarker: item
         })
       }
     })
@@ -106,18 +97,17 @@ class PropertyMap extends Component {
     this.setState({ zoom: newZoom })
   }
 
-  async onModeOfTravelChange (method) {
-    const directionAndDistance = await getDirectionAndDistance({
-      origin: this.state.origin,
-      destination: this.state.activeMarker,
-      destinations: this.state.locations,
-      mode: method
-    })
-
+  onModeOfTravelChange (method) {
     this.setState({
-      modeOfTravel: method,
-      directions: directionAndDistance.direction,
-      distance: directionAndDistance.distance
+      modeOfTravel: method
+    })
+  }
+
+  handleOriginSelection (locationId) {
+    this.state.locations.filter(item => {
+      if (parseFloat(item.id) === parseFloat(locationId)) {
+        this.setState({ origin: item })
+      }
     })
   }
 
@@ -127,10 +117,9 @@ class PropertyMap extends Component {
       modeOfTravel,
       center,
       zoom,
-      directions,
-      distance,
       locations,
-      activeMarker
+      activeMarker,
+      origin
     } = this.state
     const {
       googleMapURL,
@@ -141,10 +130,16 @@ class PropertyMap extends Component {
     // this default center is used only when the property is a single point
     return (
       <div>
+        <OriginSelector
+          locations={locations}
+          handleOriginSelection={this.handleOriginSelection}
+        />
+
         <ModeOfTravel
           value={modeOfTravel}
           onModeOfTravelChange={this.onModeOfTravelChange}
         />
+
         <LocationsGoogleMap
           googleMapURL={googleMapURL}
           containerElement={containerElement}
@@ -152,27 +147,42 @@ class PropertyMap extends Component {
           loadingElement={loadingElement}
           defaultCenter={center}
           zoom={zoom}
-          directions={directions}
-          onMapLoad={map => {
-            FitMarkersOnMap(
-              map,
-              locations,
-              multipleMarkers,
-              this.fitMap,
-              this.zoomIn
-            )
-          }}
+          onMapLoad={this.onMapMounted}
           onPlacesChanged={this.onPlacesChanged}
           onSearchBoxMounted={this.onSearchBoxMounted}
         >
+          <button
+            onClick={map =>
+              FitMarkersOnMap(
+                this.map,
+                locations,
+                multipleMarkers,
+                this.fitMap,
+                this.zoomIn
+              )
+            }
+          >
+            Fit Map
+          </button>
+
+          <Directions
+            origin={origin}
+            destination={activeMarker}
+            modeOfTravel={modeOfTravel}
+          />
+
           <MultipleMarkersWithCircles
             locations={locations}
             setActiveMarker={this.setActiveMarker}
             shouldMarkerBeActive={this.shouldMarkerBeActive}
           />
-        </LocationsGoogleMap>
 
-        <Table from={activeMarker} modeOfTravel={modeOfTravel} data={distance} />
+          <Table
+            origin={activeMarker}
+            modeOfTravel={modeOfTravel}
+            locations={locations}
+          />
+        </LocationsGoogleMap>
       </div>
     )
   }

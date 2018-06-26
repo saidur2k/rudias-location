@@ -10,27 +10,22 @@ const labelOptions = (title) => ({
   fontSize: '12px'
 })
 
-const CustomMarker = ({active, position, setActiveMarker, title}) => {
+const iconOptions = (icon) => ({
+  url: `${icon}`,
+  scaledSize: new window.google.maps.Size(32, 32)
+})
+
+const Marker = ({ id, position, active, setActiveMarker, title }) => {
   const pinIcon = active ? pinActive : pin
   return (
     <GoogleMarker
       position={position}
-      icon={{ url: `${pinIcon}` }}
+      icon={iconOptions(pinIcon)}
       onClick={() => setActiveMarker(position)}
       label={labelOptions(title)}
       title={title}
     />
   )
 }
-
-const Marker = ({ id, position, active, setActiveMarker, title }) => (
-  <CustomMarker
-    key={id}
-    position={position}
-    active={active}
-    setActiveMarker={setActiveMarker}
-    title={title}
-  />
-)
 
 export default Marker
