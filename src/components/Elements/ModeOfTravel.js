@@ -3,12 +3,10 @@ import PropTypes from 'prop-types'
 
 import './ModeOfTravel.css'
 
-const ModeOfTravel = ({onModeOfTravelChange}) => (
+const ModeOfTravel = ({ onModeOfTravelChange }) => (
   <div id='floating-panel'>
     <b>Mode of Travel: </b>
-    <select
-      id='mode'
-      onChange={(event) => onModeOfTravelChange(event.target.value)}>
+    <select id='mode' onChange={evt => onModeOfTravelChange(evt.target.value)}>
       <option value='DRIVING'>Driving</option>
       <option value='WALKING'>Walking</option>
       <option value='BICYCLING'>Bicycling</option>

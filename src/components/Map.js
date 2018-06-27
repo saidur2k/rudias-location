@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
 
 import OriginSelector from './Elements/OriginSelector'
 import LocationsGoogleMap from './LocationsGoogleMap'
@@ -12,6 +13,8 @@ import Directions from './Elements/Directions'
 import FitMarkersOnMap from '../lib/FitMarkersOnMap'
 import GoogleMapsConfig from '../lib/GoogleMapsConfig'
 import setCenter from '../lib/setCenter'
+
+import { selectModeOfTravel } from '../actions'
 
 class PropertyMap extends Component {
   constructor (props) {
@@ -34,7 +37,6 @@ class PropertyMap extends Component {
     this.setActiveMarker = this.setActiveMarker.bind(this)
     this.shouldMarkerBeActive = this.shouldMarkerBeActive.bind(this)
     this.zoomIn = this.zoomIn.bind(this)
-    this.onModeOfTravelChange = this.onModeOfTravelChange.bind(this)
     this.onPlacesChanged = this.onPlacesChanged.bind(this)
     this.onMapMounted = this.onMapMounted.bind(this)
     this.onSearchBoxMounted = this.onSearchBoxMounted.bind(this)
@@ -96,12 +98,6 @@ class PropertyMap extends Component {
     this.setState({ zoom: newZoom })
   }
 
-  onModeOfTravelChange (method) {
-    this.setState({
-      modeOfTravel: method
-    })
-  }
-
   handleOriginSelection (locationId) {
     this.state.locations.filter(item => {
       if (parseFloat(item.id) === parseFloat(locationId)) {
@@ -111,15 +107,8 @@ class PropertyMap extends Component {
   }
 
   render () {
-    const { multipleMarkers } = this.props
-    const {
-      modeOfTravel,
-      center,
-      zoom,
-      locations,
-      activeMarker,
-      origin
-    } = this.state
+    const { onModeOfTravelChange, modeOfTravel, multipleMarkers } = this.props
+    const { center, zoom, locations, activeMarker, origin } = this.state
     const {
       googleMapURL,
       containerElement,
@@ -134,10 +123,7 @@ class PropertyMap extends Component {
           handleOriginSelection={this.handleOriginSelection}
         />
 
-        <ModeOfTravel
-          value={modeOfTravel}
-          onModeOfTravelChange={this.onModeOfTravelChange}
-        />
+        <ModeOfTravel onModeOfTravelChange={onModeOfTravelChange} />
 
         <LocationsGoogleMap
           googleMapURL={googleMapURL}
@@ -201,7 +187,27 @@ PropertyMap.propTypes = {
       type: PropTypes.string.isRequired
     })
   ).isRequired,
-  modeOfTravel: PropTypes.oneOf(['DRIVING', 'WALKING', 'BICYCLING', 'TRANSIT']).isRequired,
+  modeOfTravel: PropTypes.oneOf(['DRIVING', 'WALKING', 'BICYCLING', 'TRANSIT'])
+    .isRequired,
   zoom: PropTypes.number.isRequired
 }
-export default PropertyMap
+
+function mapStateToProps (state) {
+  const { selectedModeOfTravel } = state
+  return {
+    modeOfTravel: selectedModeOfTravel
+  }
+}
+
+const mapDispatchToProps = dispatch => {
+  return {
+    onModeOfTravelChange: method => {
+      dispatch(selectModeOfTravel(method))
+    }
+  }
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PropertyMap)
