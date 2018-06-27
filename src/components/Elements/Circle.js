@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { Circle as GoogleCircle } from 'react-google-maps'
 
 const circleStyles = color => ({
@@ -14,6 +15,14 @@ const Circle = ({ type, position }) => {
   return (
     <GoogleCircle radius={1000} center={position} options={circleStyles(color)} />
   )
+}
+
+Circle.propTypes = {
+  type: PropTypes.string.isRequired,
+  position: PropTypes.shape({
+    lat: PropTypes.number.isRequired,
+    lng: PropTypes.number.isRequired
+  })
 }
 
 export default Circle

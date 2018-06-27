@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 
 import OriginSelector from './Elements/OriginSelector'
 import LocationsGoogleMap from './LocationsGoogleMap'
@@ -12,17 +13,15 @@ import FitMarkersOnMap from '../lib/FitMarkersOnMap'
 import GoogleMapsConfig from '../lib/GoogleMapsConfig'
 import setCenter from '../lib/setCenter'
 
-const DEFAULT_ZOOM = 12
-
 class PropertyMap extends Component {
   constructor (props) {
     super(props)
 
     this.state = {
-      activeMarker: {},
-      zoom: DEFAULT_ZOOM,
-      modeOfTravel: 'DRIVING',
-      origin: props.locations[0],
+      activeMarker: props.activeMarker,
+      zoom: props.zoom,
+      modeOfTravel: props.modeOfTravel,
+      origin: props.origin,
       center: setCenter(props.locations),
       locations: props.locations
     }
@@ -188,4 +187,21 @@ class PropertyMap extends Component {
   }
 }
 
+PropertyMap.propTypes = {
+  origin: PropTypes.shape({
+    lat: PropTypes.number.isRequired,
+    lng: PropTypes.number.isRequired
+  }).isRequired,
+  locations: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      lat: PropTypes.number.isRequired,
+      lng: PropTypes.number.isRequired,
+      title: PropTypes.string.isRequired,
+      type: PropTypes.string.isRequired
+    })
+  ).isRequired,
+  modeOfTravel: PropTypes.oneOf(['DRIVING', 'WALKING', 'BICYCLING', 'TRANSIT']).isRequired,
+  zoom: PropTypes.number.isRequired
+}
 export default PropertyMap

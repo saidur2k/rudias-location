@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { DirectionsRenderer } from 'react-google-maps'
 
 import getDirectionsService from '../../services/getDirectionsService'
@@ -9,20 +10,11 @@ class Directions extends React.Component {
     this.state = {
       directions: null
     }
-    this.getData = this.getData.bind(this)
-  }
-
-  async getData ({ origin, destination, modeOfTravel }) {
-    if (origin && origin.lat && origin.lng && destination && destination.lat) {
-      return getDirectionsService(origin, destination, modeOfTravel)
-    }
-
-    return null
   }
 
   async componentDidMount () {
     const { origin, destination, modeOfTravel } = this.props
-    const directions = await this.getData({ origin, destination, modeOfTravel })
+    const directions = await getDirectionsService(origin, destination, modeOfTravel)
     this.setState({directions})
   }
 
@@ -33,7 +25,7 @@ class Directions extends React.Component {
       (this.props.modeOfTravel !== nextProps.modeOfTravel)
     ) {
       const { origin, destination, modeOfTravel } = nextProps
-      const directions = await this.getData({ origin, destination, modeOfTravel })
+      const directions = await getDirectionsService(origin, destination, modeOfTravel)
       this.setState({directions})
     }
   }
@@ -46,4 +38,17 @@ class Directions extends React.Component {
     }
   }
 }
+
+Directions.propTypes = {
+  origin: PropTypes.shape({
+    lat: PropTypes.number,
+    lng: PropTypes.number
+  }),
+  destination: PropTypes.shape({
+    lat: PropTypes.number,
+    lng: PropTypes.number
+  }),
+  modeOfTravel: PropTypes.oneOf(['DRIVING', 'WALKING', 'BICYCLING', 'TRANSIT']).isRequired
+}
+
 export default Directions

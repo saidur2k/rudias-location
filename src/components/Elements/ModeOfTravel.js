@@ -1,4 +1,6 @@
 import React from 'react'
+import PropTypes from 'prop-types'
+
 import './ModeOfTravel.css'
 
 const ModeOfTravel = ({onModeOfTravelChange}) => (
@@ -14,5 +16,9 @@ const ModeOfTravel = ({onModeOfTravelChange}) => (
     </select>
   </div>
 )
+
+ModeOfTravel.propTypes = {
+  onModeOfTravelChange: PropTypes.func.isRequired
+}
 
 export default ModeOfTravel

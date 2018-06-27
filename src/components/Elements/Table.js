@@ -1,5 +1,6 @@
 import React from 'react'
 import ReactTable from 'react-table'
+import PropTypes from 'prop-types'
 
 import getDistanceService from '../../services/getDistanceService'
 
@@ -77,6 +78,19 @@ class Table extends React.Component {
       )
     }
   }
+}
+
+Table.propTypes = {
+  origin: PropTypes.shape({
+    lat: PropTypes.number.isRequired,
+    lng: PropTypes.number.isRequired
+  }).isRequired,
+  locations: PropTypes.arrayOf(
+    PropTypes.shape({
+      lat: PropTypes.number.isRequired,
+      lng: PropTypes.number.isRequired
+    }).isRequired).isRequired,
+  modeOfTravel: PropTypes.oneOf(['DRIVING', 'WALKING', 'BICYCLING', 'TRANSIT']).isRequired
 }
 
 export default Table

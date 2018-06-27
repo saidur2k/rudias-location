@@ -97,25 +97,29 @@ const locations = [
     title: 'Chatswood Station',
     lat: -33.796656474004,
     lng: 151.18084953115,
-    id: 15
+    id: 15,
+    type: 'station'
   },
   {
     title: 'North Ryde Station',
     lat: -33.794607488238,
     lng: 151.13791011714,
-    id: 16
+    id: 16,
+    type: 'station'
   },
   {
     title: 'Macquarie Park Station ',
     lat: -33.7849698,
     lng: 151.1284336,
-    id: 17
+    id: 17,
+    type: 'station'
   },
   {
     title: 'Macquarie University Station',
     lat: -33.7775092,
     lng: 151.1185824,
-    id: 18
+    id: 18,
+    type: 'station'
   }
 ]
 

@@ -1,4 +1,6 @@
 import React from 'react'
+import PropTypes from 'prop-types'
+
 import './ModeOfTravel.css'
 
 const OriginSelector = ({ locations, handleOriginSelection }) => (
@@ -16,5 +18,15 @@ const OriginSelector = ({ locations, handleOriginSelection }) => (
     </select>
   </div>
 )
+
+OriginSelector.propTypes = {
+  locations: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      title: PropTypes.string.isRequired
+    })
+  ).isRequired,
+  handleOriginSelection: PropTypes.func.isRequired
+}
 
 export default OriginSelector

@@ -1,4 +1,6 @@
 import React from 'react'
+import PropTypes from 'prop-types'
+
 import { Marker as GoogleMarker } from 'react-google-maps'
 
 import pin from './icons/map-pin.png'
@@ -28,4 +30,14 @@ const Marker = ({ id, position, active, setActiveMarker, title }) => {
   )
 }
 
+Marker.propTypes = {
+  id: PropTypes.number.isRequired,
+  position: PropTypes.shape({
+    lat: PropTypes.number.isRequired,
+    lng: PropTypes.number.isRequired
+  }),
+  active: PropTypes.bool.isRequired,
+  setActiveMarker: PropTypes.func.isRequired,
+  title: PropTypes.string.isRequired
+}
 export default Marker
