@@ -39,7 +39,7 @@ class Table extends React.Component {
 
   async componentDidMount () {
     const { origin, locations, modeOfTravel } = this.props
-    const data = await getDistanceService(origin, locations, modeOfTravel)
+    const data = await getDistanceService(origin, locations, modeOfTravel, this.props.map)
     this.setState({ data })
   }
 
@@ -50,7 +50,7 @@ class Table extends React.Component {
       this.props.modeOfTravel !== nextProps.modeOfTravel
     ) {
       const { origin, locations, modeOfTravel } = nextProps
-      const data = await getDistanceService(origin, locations, modeOfTravel)
+      const data = await getDistanceService(origin, locations, modeOfTravel, this.props.map)
       this.setState({ data })
     }
   }

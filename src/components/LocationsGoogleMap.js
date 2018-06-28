@@ -16,9 +16,9 @@ const LocationsGoogleMap = withScriptjs(
       defaultCenter={props.defaultCenter}
     >
       <SearchBox
-        onSearchBoxMounted={props.onSearchBoxMounted}
+        addNewLocation={props.addNewLocation}
         controlPosition={window.google.maps.ControlPosition.TOP_RIGHT}
-        onPlacesChanged={props.onPlacesChanged}
+        setActiveMarker={props.setActiveMarker}
       />
       {props.children}
     </GoogleMap>
@@ -32,8 +32,7 @@ LocationsGoogleMap.propTypes = {
     lat: PropTypes.number.isRequired,
     lng: PropTypes.number.isRequired
   }).isRequired,
-  onSearchBoxMounted: PropTypes.func.isRequired,
-  onPlacesChanged: PropTypes.func.isRequired
+  addNewLocation: PropTypes.func.isRequired
 }
 
 export default LocationsGoogleMap

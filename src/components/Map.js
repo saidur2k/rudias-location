@@ -14,19 +14,14 @@ import FitMarkersOnMap from '../lib/FitMarkersOnMap'
 import GoogleMapsConfig from '../lib/GoogleMapsConfig'
 import setCenter from '../lib/setCenter'
 
-import { selectModeOfTravel } from '../actions'
+import { selectModeOfTravel, addLocation, setActiveMarker, setOriginMarker } from '../actions'
 
 class PropertyMap extends Component {
   constructor (props) {
     super(props)
 
     this.state = {
-      activeMarker: props.activeMarker,
-      zoom: props.zoom,
-      modeOfTravel: props.modeOfTravel,
-      origin: props.origin,
-      center: setCenter(props.locations),
-      locations: props.locations
+      zoom: props.zoom
     }
 
     this.map = React.createRef()
@@ -34,93 +29,32 @@ class PropertyMap extends Component {
 
     // we fit all markers in the map just when loading it, after that it's user's choice what to fit in his viewport
     this.fitMap = true
-    this.setActiveMarker = this.setActiveMarker.bind(this)
-    this.shouldMarkerBeActive = this.shouldMarkerBeActive.bind(this)
     this.zoomIn = this.zoomIn.bind(this)
-    this.onPlacesChanged = this.onPlacesChanged.bind(this)
     this.onMapMounted = this.onMapMounted.bind(this)
-    this.onSearchBoxMounted = this.onSearchBoxMounted.bind(this)
-    this.handleOriginSelection = this.handleOriginSelection.bind(this)
   }
 
   onMapMounted (ref) {
     this.map = ref
   }
 
-  onSearchBoxMounted (ref) {
-    this.searchBox = ref
-  }
-
-  onPlacesChanged () {
-    const places = this.searchBox.getPlaces()
-    const newMarkers = []
-
-    places.forEach((place, index) => {
-      return newMarkers.push({
-        title: place.formatted_address,
-        lat: place.geometry.location.lat(),
-        lng: place.geometry.location.lng(),
-        type: 'custom',
-        id: this.state.locations.length + (index + 1)
-      })
-    })
-
-    this.setState(previousState => {
-      const locations = previousState.locations.concat(newMarkers)
-      return {
-        center: setCenter(locations),
-        locations: locations,
-        activeMarker: newMarkers[0]
-      }
-    })
-  }
-
-  setActiveMarker (clickedMarker) {
-    this.fitMap = true
-
-    this.state.locations.filter(item => {
-      if (item.lat === clickedMarker.lat && item.lng === clickedMarker.lng) {
-        this.setState({
-          activeMarker: item
-        })
-      }
-    })
-  }
-
-  shouldMarkerBeActive (marker) {
-    return (
-      this.state.activeMarker.lat === marker.lat &&
-      this.state.activeMarker.lng === marker.lng
-    )
-  }
-
   zoomIn (newZoom) {
     this.setState({ zoom: newZoom })
   }
 
-  handleOriginSelection (locationId) {
-    this.state.locations.filter(item => {
-      if (parseFloat(item.id) === parseFloat(locationId)) {
-        this.setState({ origin: item })
-      }
-    })
-  }
-
   render () {
-    const { onModeOfTravelChange, modeOfTravel, multipleMarkers } = this.props
-    const { center, zoom, locations, activeMarker, origin } = this.state
+    const { onModeOfTravelChange, modeOfTravel, multipleMarkers, addNewLocation, locations, activeMarker, setActiveMarker, originMarker, setOriginMarker } = this.props
+    const { zoom } = this.state
     const {
       googleMapURL,
       containerElement,
       mapElement,
       loadingElement
     } = GoogleMapsConfig
-    // this default center is used only when the property is a single point
     return (
       <div>
         <OriginSelector
           locations={locations}
-          handleOriginSelection={this.handleOriginSelection}
+          setOriginMarker={setOriginMarker}
         />
 
         <ModeOfTravel onModeOfTravelChange={onModeOfTravelChange} />
@@ -130,11 +64,11 @@ class PropertyMap extends Component {
           containerElement={containerElement}
           mapElement={mapElement}
           loadingElement={loadingElement}
-          defaultCenter={center}
+          defaultCenter={setCenter(locations)}
           zoom={zoom}
           onMapLoad={this.onMapMounted}
-          onPlacesChanged={this.onPlacesChanged}
-          onSearchBoxMounted={this.onSearchBoxMounted}
+          addNewLocation={addNewLocation}
+          setActiveMarker={setActiveMarker}
         >
           <button
             onClick={map =>
@@ -151,15 +85,15 @@ class PropertyMap extends Component {
           </button>
 
           <Directions
-            origin={origin}
+            origin={originMarker}
             destination={activeMarker}
             modeOfTravel={modeOfTravel}
           />
 
           <MultipleMarkersWithCircles
             locations={locations}
-            setActiveMarker={this.setActiveMarker}
-            shouldMarkerBeActive={this.shouldMarkerBeActive}
+            activeMarker={activeMarker}
+            setActiveMarker={setActiveMarker}
           />
 
           <Table
@@ -174,7 +108,7 @@ class PropertyMap extends Component {
 }
 
 PropertyMap.propTypes = {
-  origin: PropTypes.shape({
+  originMarker: PropTypes.shape({
     lat: PropTypes.number.isRequired,
     lng: PropTypes.number.isRequired
   }).isRequired,
@@ -193,16 +127,28 @@ PropertyMap.propTypes = {
 }
 
 function mapStateToProps (state) {
-  const { selectedModeOfTravel } = state
+  const { modeOfTravel, locations, activeMarker, originMarker } = state
   return {
-    modeOfTravel: selectedModeOfTravel
+    modeOfTravel,
+    locations,
+    activeMarker,
+    originMarker
   }
 }
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
     onModeOfTravelChange: method => {
       dispatch(selectModeOfTravel(method))
+    },
+    addNewLocation: async (method) => {
+      dispatch(addLocation(method))
+    },
+    setActiveMarker: method => {
+      dispatch(setActiveMarker(method))
+    },
+    setOriginMarker: method => {
+      dispatch(setOriginMarker(method))
     }
   }
 }

@@ -17,13 +17,14 @@ const iconOptions = (icon) => ({
   scaledSize: new window.google.maps.Size(32, 32)
 })
 
-const Marker = ({ id, position, active, setActiveMarker, title }) => {
+const Marker = ({ item, active, setActiveMarker, title }) => {
   const pinIcon = active ? pinActive : pin
+  const {lat, lng} = item
   return (
     <GoogleMarker
-      position={position}
+      position={{lat, lng}}
       icon={iconOptions(pinIcon)}
-      onClick={() => setActiveMarker(position)}
+      onClick={() => setActiveMarker(item)}
       label={labelOptions(title)}
       title={title}
     />
@@ -31,11 +32,11 @@ const Marker = ({ id, position, active, setActiveMarker, title }) => {
 }
 
 Marker.propTypes = {
-  id: PropTypes.number.isRequired,
-  position: PropTypes.shape({
+  item: PropTypes.shape({
+    id: PropTypes.number.isRequired,
     lat: PropTypes.number.isRequired,
     lng: PropTypes.number.isRequired
-  }),
+  }).isRequired,
   active: PropTypes.bool.isRequired,
   setActiveMarker: PropTypes.func.isRequired,
   title: PropTypes.string.isRequired

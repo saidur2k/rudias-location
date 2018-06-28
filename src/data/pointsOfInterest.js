@@ -1,4 +1,4 @@
-const locations = [
+const pointsOfInterest = [
   { title: 'Epping', lat: -33.772901, lng: 151.08208, id: 1, type: 'station' },
   {
     title: 'Cherrybrook Station',
@@ -123,4 +123,4 @@ const locations = [
   }
 ]
 
-export default locations
+export default pointsOfInterest

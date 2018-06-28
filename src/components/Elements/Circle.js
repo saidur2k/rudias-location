@@ -10,10 +10,11 @@ const circleStyles = color => ({
   fillOpacity: 0.45
 })
 
-const Circle = ({ type, position }) => {
+const Circle = ({ type, item }) => {
   const color = type && type === 'custom' ? '#00FF00' : '#e8ffa1'
+  const {lat, lng} = item
   return (
-    <GoogleCircle radius={1000} center={position} options={circleStyles(color)} />
+    <GoogleCircle radius={1000} center={{lat, lng}} options={circleStyles(color)} />
   )
 }
 
