@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
 
 import { SearchBox as GoogleSearchBox } from 'react-google-maps/lib/components/places/SearchBox'
 import './SearchBox.css'
@@ -22,8 +23,7 @@ class SearchBox extends Component {
       })
     })
 
-    // this.props.setActiveMarker(this.props.locations(this.props.locations.length))
-
+    this.props.setActiveMarker([...this.props.locations].pop())
   }
 
   render () {
@@ -47,4 +47,14 @@ SearchBox.propTypes = {
   addNewLocation: PropTypes.func.isRequired,
   setActiveMarker: PropTypes.func.isRequired
 }
-export default SearchBox
+
+function mapStateToProps (state) {
+  const { locations } = state
+  return {
+    locations
+  }
+}
+
+export default connect(mapStateToProps)(SearchBox)
+
+// export default SearchBox
