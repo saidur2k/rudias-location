@@ -56,5 +56,3 @@ function mapStateToProps (state) {
 }
 
 export default connect(mapStateToProps)(SearchBox)
-
-// export default SearchBox

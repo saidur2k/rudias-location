@@ -1,12 +1,15 @@
-import { combineReducers } from 'redux'
+import { combineReducers } from 'redux';
 import {
   SELECT_MODEOFTRAVEL,
   ADD_LOCATION,
   SET_ACTIVEMARKER,
-  SET_ORIGINMARKER
-} from '../actions'
+  SET_ORIGINMARKER,
+  INVALIDATE_DIRECTIONS,
+  REQUEST_DIRECTIONS,
+  RECIEVE_DIRECTIONS
+} from '../actions';
 
-import pointsOfInterest from '../data/pointsOfInterest'
+import pointsOfInterest from '../data/pointsOfInterest';
 
 function modeOfTravel (state = 'DRIVING', action) {
   switch (action.type) {
@@ -47,11 +50,57 @@ function originMarker (state = pointsOfInterest[0], action) {
   }
 }
 
+function directions (
+  state = { isFetching: false, didInvalidate: false, items: [] },
+  action
+) {
+  switch (action.type) {
+    case INVALIDATE_DIRECTIONS:
+      return Object.assign({}, state, { didInvalidate: true })
+    case REQUEST_DIRECTIONS:
+      return Object.assign({}, state, {
+        isFetching: true,
+        didInvalidate: false
+      })
+    case RECIEVE_DIRECTIONS:
+      return Object.assign({}, state, {
+        isFetching: false,
+        didInvalidate: false,
+        items: [action.directions],
+        lastUpdated: action.receivedAt
+      })
+    default:
+      return state
+  }
+}
+
+function directionsByOriginDestination (state = {}, action) {
+
+  switch (action.type) {
+    case INVALIDATE_DIRECTIONS:
+    case RECIEVE_DIRECTIONS:
+    case REQUEST_DIRECTIONS:
+
+    const { modeOfTravel, originMarker, activeMarker } = action
+    const originMarkerId = originMarker.id
+    const activeMarkerId = activeMarker.id
+
+    const calculatedId = `${modeOfTravel}-${originMarkerId}-${activeMarkerId}`
+      return Object.assign({}, state, {
+        [calculatedId]: directions(state[calculatedId], action)
+      })
+    default:
+      return state
+  }
+}
+
 const rootReducer = combineReducers({
   modeOfTravel,
   locations,
   activeMarker,
-  originMarker
+  originMarker,
+  directions,
+  directionsByOriginDestination
 })
 
 export default rootReducer

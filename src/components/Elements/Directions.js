@@ -1,38 +1,37 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import { DirectionsRenderer } from 'react-google-maps'
+import React from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { DirectionsRenderer } from 'react-google-maps';
 
-import getDirectionsService from '../../services/getDirectionsService'
-
+import { fetchDirectionsIfNeeded } from '../../actions';
 class Directions extends React.Component {
-  constructor (props) {
-    super(props)
-    this.state = {
-      directions: null
-    }
+  componentDidMount () {
+    const { dispatch, origin, destination, modeOfTravel } = this.props
+    dispatch(
+      fetchDirectionsIfNeeded({
+        originMarker: origin,
+        activeMarker: destination,
+        modeOfTravel
+      })
+    )
   }
 
-  async componentDidMount () {
-    const { origin, destination, modeOfTravel } = this.props
-    const directions = await getDirectionsService(origin, destination, modeOfTravel)
-    this.setState({directions})
-  }
-
-  async componentWillReceiveProps (nextProps) {
-    if (
-      (this.props.origin !== nextProps.origin) ||
-      (this.props.destination !== nextProps.destination) ||
-      (this.props.modeOfTravel !== nextProps.modeOfTravel)
-    ) {
-      const { origin, destination, modeOfTravel } = nextProps
-      const directions = await getDirectionsService(origin, destination, modeOfTravel)
-      this.setState({directions})
-    }
+  componentWillReceiveProps (nextProps) {
+    const { dispatch, origin, destination, modeOfTravel } = nextProps
+    dispatch(
+      fetchDirectionsIfNeeded({
+        originMarker: origin,
+        activeMarker: destination,
+        modeOfTravel
+      })
+    )
   }
 
   render () {
-    if (this.state.directions) {
-      return <DirectionsRenderer directions={this.state.directions} />
+    const { directions } = this.props
+    console.log('directions', directions[0])
+    if (directions && directions[0]) {
+      return <DirectionsRenderer directions={directions[0]} />
     } else {
       return <div id='no-directions' />
     }
@@ -42,13 +41,42 @@ class Directions extends React.Component {
 Directions.propTypes = {
   origin: PropTypes.shape({
     lat: PropTypes.number,
-    lng: PropTypes.number
+    lng: PropTypes.number,
+    id: PropTypes.number
   }),
   destination: PropTypes.shape({
     lat: PropTypes.number,
-    lng: PropTypes.number
+    lng: PropTypes.number,
+    id: PropTypes.number
   }),
-  modeOfTravel: PropTypes.oneOf(['DRIVING', 'WALKING', 'BICYCLING', 'TRANSIT']).isRequired
+  modeOfTravel: PropTypes.oneOf(['DRIVING', 'WALKING', 'BICYCLING', 'TRANSIT'])
+    .isRequired
 }
 
-export default Directions
+function mapStateToProps (state) {
+  const {
+    originMarker,
+    activeMarker,
+    modeOfTravel,
+    directionsByOriginDestination
+  } = state
+  const calculatedId = `${modeOfTravel}-${originMarker.id}-${activeMarker.id}`
+  const {
+    isFetching,
+    lastUpdated,
+    items: directions
+  } = directionsByOriginDestination[calculatedId] || {
+    isFetching: true,
+    items: []
+  }
+  return {
+    origin: originMarker,
+    destination: activeMarker,
+    modeOfTravel: modeOfTravel,
+    isFetching,
+    lastUpdated,
+    directions
+  }
+}
+
+export default connect(mapStateToProps)(Directions)

@@ -6,26 +6,30 @@ import { Marker as GoogleMarker } from 'react-google-maps'
 import pin from './icons/map-pin.png'
 import pinActive from './icons/map-pin-active.png'
 
-const labelOptions = (title) => ({
-  text: title,
-  color: '#eb3a44',
-  fontSize: '12px'
-})
-
-const iconOptions = (icon) => ({
-  url: `${icon}`,
-  scaledSize: new window.google.maps.Size(32, 32)
-})
-
 const Marker = ({ item, active, setActiveMarker, title }) => {
   const pinIcon = active ? pinActive : pin
-  const {lat, lng} = item
+
+  const { lat, lng } = item
+
+  const labelOptions = {
+    text: title,
+    color: '#175e5a',
+    fontSize: '12px',
+    fontWeight: 'bold'
+  }
+
+  const iconOptions = {
+    url: `${pinIcon}`,
+    scaledSize: new window.google.maps.Size(32, 32),
+    labelOrigin: new window.google.maps.Point(36, 36)
+  }
+
   return (
     <GoogleMarker
-      position={{lat, lng}}
-      icon={iconOptions(pinIcon)}
+      position={{ lat, lng }}
+      icon={iconOptions}
       onClick={() => setActiveMarker(item)}
-      label={labelOptions(title)}
+      label={labelOptions}
       title={title}
     />
   )
