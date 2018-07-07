@@ -2,19 +2,30 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
-import OriginSelector from './Elements/OriginSelector'
+import OriginSelector from '../components/OriginSelector'
 import LocationsGoogleMap from './LocationsGoogleMap'
-import MultipleMarkersWithCircles from './Groupings/MultipleMarkersWithCircles'
-import ModeOfTravel from './Elements/ModeOfTravel'
-import Table from './Elements/Table'
+import MultipleMarkersWithCircles from './MultipleMarkersWithCircles'
+import ModeOfTravel from '../components/ModeOfTravel'
+import Table from '../components/Table'
 
-import Directions from './Elements/Directions'
+import Directions from '../components/Direction'
 
 import FitMarkersOnMap from '../lib/FitMarkersOnMap'
 import GoogleMapsConfig from '../lib/GoogleMapsConfig'
 import setCenter from '../lib/setCenter'
 
-import { selectModeOfTravel, addLocation, setActiveMarker, setOriginMarker } from '../actions'
+import {
+  selectModeOfTravel
+} from '../components/ModeOfTravel/ModeOfTravelActions'
+
+import {
+  addLocation
+} from '../components/SearchBox/SearchBoxActions'
+
+import {
+  setActiveMarker,
+  setOriginMarker
+} from '../components/Marker/MarkerActions'
 
 class PropertyMap extends Component {
   constructor (props) {
@@ -42,7 +53,17 @@ class PropertyMap extends Component {
   }
 
   render () {
-    const { onModeOfTravelChange, modeOfTravel, multipleMarkers, addNewLocation, locations, activeMarker, setActiveMarker, originMarker, setOriginMarker } = this.props
+    const {
+      onModeOfTravelChange,
+      modeOfTravel,
+      multipleMarkers,
+      addNewLocation,
+      locations,
+      activeMarker,
+      setActiveMarker,
+      originMarker,
+      setOriginMarker
+    } = this.props
     const { zoom } = this.state
     const {
       googleMapURL,
@@ -136,12 +157,12 @@ function mapStateToProps (state) {
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {
     onModeOfTravelChange: method => {
       dispatch(selectModeOfTravel(method))
     },
-    addNewLocation: async (method) => {
+    addNewLocation: async method => {
       dispatch(addLocation(method))
     },
     setActiveMarker: method => {

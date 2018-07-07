@@ -6,7 +6,7 @@ import {
 } from 'react-google-maps'
 import PropTypes from 'prop-types'
 
-import SearchBox from './Elements/SearchBox'
+import SearchBox from '../components/SearchBox'
 
 const LocationsGoogleMap = withScriptjs(
   withGoogleMap(props => (

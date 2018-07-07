@@ -1,9 +1,11 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { DirectionsRenderer } from 'react-google-maps';
+import React from 'react'
+import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
+import { DirectionsRenderer } from 'react-google-maps'
 
-import { fetchDirectionsIfNeeded } from '../../actions';
+import { directionId } from './DirectionHelper'
+import { fetchDirectionsIfNeeded } from './DirectionActions'
+
 class Directions extends React.Component {
   componentDidMount () {
     const { dispatch, origin, destination, modeOfTravel } = this.props
@@ -29,7 +31,6 @@ class Directions extends React.Component {
 
   render () {
     const { directions } = this.props
-    console.log('directions', directions[0])
     if (directions && directions[0]) {
       return <DirectionsRenderer directions={directions[0]} />
     } else {
@@ -60,12 +61,13 @@ function mapStateToProps (state) {
     modeOfTravel,
     directionsByOriginDestination
   } = state
-  const calculatedId = `${modeOfTravel}-${originMarker.id}-${activeMarker.id}`
+  const id = directionId({modeOfTravel, originMarker, activeMarker})
+
   const {
     isFetching,
     lastUpdated,
     items: directions
-  } = directionsByOriginDestination[calculatedId] || {
+  } = directionsByOriginDestination[id] || {
     isFetching: true,
     items: []
   }

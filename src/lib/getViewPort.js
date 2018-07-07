@@ -20,4 +20,3 @@ export function getAspectRatio () {
   }
   return getWidth() / getHeight()
 }
-

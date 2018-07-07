@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import './ModeOfTravel.css'
+import './OriginSelector.css'
 
 const OriginSelector = ({ locations, setOriginMarker }) => (
   <div id='origin-floating-panel'>

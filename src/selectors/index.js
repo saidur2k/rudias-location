@@ -2,7 +2,6 @@ import { createSelector } from 'reselect'
 
 const {getDirectionsService} = require('../services/getDirectionsService')
 
-
 const getModeOfTravel = (state) => state.modeOfTravel
 const getOrigin = (state) => state.originMarker
 const getDestination = (state) => state.activeMarker
@@ -10,7 +9,6 @@ const getDestination = (state) => state.activeMarker
 export const getDirectionSelector = createSelector(
   [ getModeOfTravel, getOrigin, getDestination ],
   (modeOfTravel, originMarker, activeMarker) => {
-
     // if (!modeOfTravel || !originMarker || activeMarker) {
     //   return false
     // }
@@ -26,6 +24,5 @@ export const getDirectionSelector = createSelector(
         response => response,
         error => console.log('An error occurred.', error)
       )
-
   }
 )

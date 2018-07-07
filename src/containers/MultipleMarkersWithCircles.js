@@ -1,8 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import Marker from '../Elements/Marker'
-import Circle from '../Elements/Circle'
+import Marker from '../components/Marker'
+import Circle from '../components/Circle'
 
 const MarkerWithCircle = ({ item, shouldMarkerBeActive, activeMarker, setActiveMarker }) => {
   const { id, title, type } = item

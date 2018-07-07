@@ -1,4 +1,4 @@
-import averageGeolocation from './averageGeolocation';
+import averageGeolocation from './averageGeolocation'
 
 const setCenter = locations => {
   let defaultCenter
